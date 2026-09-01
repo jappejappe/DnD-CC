@@ -1,18 +1,14 @@
+import os
+from typing import Literal
 import discord
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
-import os
 
-materiais = [
-    "Cobre",
-    "Prata",
-    "Electro",
-    "Ouro",
-    "Platina"
-]
+# Tipagem para criar a lista suspensa de opções no Discord
+Moedas = Literal["Cobre", "Prata", "Electro", "Ouro", "Platina"]
 
-# 1. Lógica de cálculo
+# 1. Lógica de cálculo (original)
 def converter_moeda(moeda_origem, moeda_destino, quantidade):
     valores_em_cobre = {
         'cobre': 1,
@@ -49,18 +45,42 @@ async def on_ready():
     print(f"Bot online como {bot.user} (ID: {bot.user.id})")
 
 # 3. Slash Command (/calcular)
-@bot.tree.command(name="calcular", description="Executa o cálculo personalizado")
+@bot.tree.command(name="calcular", description="Executa a conversão de moedas")
 @app_commands.describe(
     moeda_origem="Moeda de origem",
-    quantidade="Quantidade",
+    quantidade="Quantidade de moedas",
     moeda_destino="Moeda de destino"
 )
-async def calcular(interaction: discord.Interaction, moeda_origem: str, quantidade: int, moeda_destino: str):
+async def calcular(
+    interaction: discord.Interaction, 
+    moeda_origem: Moedas, 
+    quantidade: int, 
+    moeda_destino: Moedas
+):
     try:
         resultado, sobra_moeda_origem = converter_moeda(moeda_origem, moeda_destino, quantidade)
-        await interaction.response.send_message(
-            f"**Resultado:** Suas ***{quantidade}*** moedas de {moeda_origem.capitalize()} equivalem a ***{resultado}*** moedas de {moeda_destino.capitalize()}.\n**Sobra:** Sobraram {sobra_moeda_origem} moedas de {moeda_origem.capitalize()}."
+        
+        embed = discord.Embed(
+            title="Conversão de Moedas",
+            color=discord.Color.gold()
         )
+        embed.add_field(
+            name="Entrada",
+            value=f"**{quantidade}** moedas de {moeda_origem}",
+            inline=True
+        )
+        embed.add_field(
+            name="Resultado",
+            value=f"**{resultado}** moedas de {moeda_destino}",
+            inline=True
+        )
+        embed.add_field(
+            name="Sobra",
+            value=f"**{sobra_moeda_origem}** moedas de {moeda_origem}",
+            inline=False
+        )
+
+        await interaction.response.send_message(embed=embed)
     except Exception as e:
         await interaction.response.send_message(
             f"❌ **Erro no cálculo:** {str(e)}", 

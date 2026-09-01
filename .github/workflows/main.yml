@@ -2,13 +2,17 @@ name: Keep Render Awake
 
 on:
   schedule:
-    - cron: "*/12 * * * *"   # roda a cada 15 minutos
-  workflow_dispatch:          # permite rodar manualmente se quiser
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Curl site
+      - name: Ping Web Service
         run: |
-          curl -fsS https://dnd-cc-ts9j.onrender.com/ || echo "ping falhou"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://dnd-cc-ts9j.onrender.com/)
+          echo "Status retornado: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Servico nao respondeu 200 OK"
+          fi

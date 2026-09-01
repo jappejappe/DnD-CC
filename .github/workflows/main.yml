@@ -1,0 +1,15 @@
+name: Keep Render Awake
+
+on:
+  schedule:
+    - cron: "*/12 * * * *"   # roda a cada 15 minutos
+  workflow_dispatch:          # permite rodar manualmente se quiser
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl site
+        run: |
+          curl -fsS https://escutas.onrender.com/ || echo "ping falhou"
+          curl -fsS https://skyfolio.onrender.com/ || echo "ping falhou"

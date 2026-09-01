@@ -11,5 +11,4 @@ jobs:
     steps:
       - name: Curl site
         run: |
-          curl -fsS https://escutas.onrender.com/ || echo "ping falhou"
-          curl -fsS https://skyfolio.onrender.com/ || echo "ping falhou"
+          curl -fsS https://dnd-cc-ts9j.onrender.com/ || echo "ping falhou"

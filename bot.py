@@ -6,6 +6,7 @@ from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 from flask import Flask
+from discord.http import Route
 
 # Servidor HTTP simples para manter o Web Service do Render ativo
 app = Flask(__name__)
@@ -132,6 +133,13 @@ async def help_command(interaction: discord.Interaction):
 # 4. Inicialização
 load_dotenv()
 TOKEN = os.getenv("BOT-TOKEN") or os.getenv("BOT_TOKEN")
+
+# Redireciona a API do Discord para o Worker da Cloudflare
+CUSTOM_API_BASE = os.getenv("CUSTOM_API_BASE")
+if CUSTOM_API_BASE:
+    base = CUSTOM_API_BASE.rstrip("/")
+    Route.BASE = f"{base}/api/v10"
+    print(f"Roteando API do Discord via: {Route.BASE}")
 
 if __name__ == "__main__":
     if not TOKEN:
